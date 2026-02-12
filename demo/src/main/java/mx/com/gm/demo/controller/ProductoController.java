@@ -34,6 +34,19 @@ public class ProductoController {
         return ResponseEntity.ok(guardado);
     }
 
+    //Actualizar un producto
+    @PutMapping("/{id}")
+    public ResponseEntity<Producto> actualizar (@PathVariable Integer id, @Valid @RequestBody Producto detallesProducto){
+        return productoRepository.findById(id).map(producto -> {
+            producto.setNombre((detallesProducto.getNombre()));
+            producto.setPrecio((detallesProducto.getPrecio()));
+            producto.setStock((detallesProducto.getStock()));
+
+            Producto actualizado = productoRepository.save(producto);
+            return ResponseEntity.ok(actualizado);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     //Borrar un producto
     @DeleteMapping("/{id}")
     public void eliminar (@PathVariable Integer id){

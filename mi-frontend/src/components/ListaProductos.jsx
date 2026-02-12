@@ -16,6 +16,14 @@ const ListaProductos = () => {
         setProductos(resultado.data);
     };
 
+    //Estado para saber saber si se esta editando 
+    const [editando, setEditando] = useState(false);
+    const [idEditar, setIdEditar] = useState(null);
+
+    //Estado para para guardar busqueda
+
+    const [busqueda, setBusqueda] = useState("");
+
     // 3.Se ejecuta automaticamente al cargar la página
     useEffect(() => {
         cargarProductos();
@@ -31,7 +39,13 @@ const ListaProductos = () => {
     const guardarProducto = async (e) => {
         e.preventDefault(); //Evita que la pagina se recargue
         try {
-            await axios.post(URL, nuevoProducto);
+            if(editando){
+                await axios.put(`${URL}/${idEditar}`, nuevoProducto);
+                setEditando(false);
+                setIdEditar(null);
+            }else{
+                await axios.post(URL, nuevoProducto);
+            }
             setNuevoProducto({ nombre: '', precio: '', stock: ''}); //Limpiar el formulario
             cargarProductos(); //Recargamos la lista
         } catch (error) {
@@ -39,6 +53,21 @@ const ListaProductos = () => {
             alert("Error: " + error.response.data.message || "Datos invalidado");
         }
     };
+
+    const prepararEdicion = (producto) =>{
+        setEditando(true);
+        setIdEditar(producto.id);
+        setNuevoProducto({
+            nombre: producto.nombre,
+            precio: producto.precio,
+            stock: producto.stock
+        });
+    };
+
+    //Filtrar los productos 
+    const productosFiltrados = productos.filter((p) =>
+        p.nombre.toLowerCase().includes(busqueda.toLowerCase())
+    );
 
     return (
         <div className='container mt-4'>
@@ -60,10 +89,24 @@ const ListaProductos = () => {
                         setNuevoProducto({...nuevoProducto, stock: e.target.value})} required></input>
                 </div>
                 <div className='col-md-2'>
-                    <button type='submit' className='btn btn-success w-100'>Agregar</button>
+                    <button type='submit' className={`btn w-100 ${editando ? 'btn-warning' : 'btn-success'}`}>{editando ? 'Actualizar' : 'Agregar'}</button>
+                    {editando && (<button className='btn btn-secondary w-100 mt-2' onClick={() =>
+                        {
+                            setEditando(false);
+                            setNuevoProducto({nombre:'', precio:'', stock:''})
+                        }
+                    }>Cancelar</button>)}
                 </div>
             </form>
             <h2 className='text-center mb-4'>Inventario de Producto</h2>
+            {/* Barra de busqueda */}
+            <div className='mb-3'>
+                    <div className='input-group'>
+                        <span className='input-group-text bg-primary text-white'></span>
+                        <input type='text' className='form-control' placeholder='Buscar producto por nombre...'
+                        value={busqueda} onChange={(e) => setBusqueda(e.target.value)}></input>
+                    </div>
+            </div>
             {/*  4. Tabla usando clases de Bootstrap */}
             <table className='table table-striped table-hover-shadow'>
                 <thead className='table-dark'>
@@ -76,13 +119,14 @@ const ListaProductos = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {productos.map((p) =>(
+                    {productosFiltrados.map((p) =>(
                         <tr key={p.id}>
                             <td>{p.id}</td>
                             <td>{p.nombre}</td>
                             <td>{p.precio}</td>
                             <td>{p.stock}u.</td>
                             <td>
+                                <button onClick={() => prepararEdicion(p)} className='btn btn-info btn-sm me-2'>Editar</button>
                                 <button onClick={() => eliminarProducto(p.id)} className='btn btn-danger btn-sm'>Eliminar</button>
                             </td>
                         </tr>
