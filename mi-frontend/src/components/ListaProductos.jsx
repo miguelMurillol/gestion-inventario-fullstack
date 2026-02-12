@@ -21,8 +21,11 @@ const ListaProductos = () => {
     const [idEditar, setIdEditar] = useState(null);
 
     //Estado para para guardar busqueda
-
     const [busqueda, setBusqueda] = useState("");
+
+    //Estado para ordenar tabla
+    const [ordenarPor, setOrdenarPor] = useState('nombre');
+    const [direccion, setDireccion] = useState('asc'); 
 
     // 3.Se ejecuta automaticamente al cargar la página
     useEffect(() => {
@@ -64,10 +67,42 @@ const ListaProductos = () => {
         });
     };
 
-    //Filtrar los productos 
+    //Filtrado (Basado en el input de busqueda)
     const productosFiltrados = productos.filter((p) =>
         p.nombre.toLowerCase().includes(busqueda.toLowerCase())
     );
+
+    //Filtrar los productos y ordenarlos
+    const productosOrdenados = [...productosFiltrados].sort((a,b) =>{
+        console.log(`Ordenando por ${ordenarPor} en direccion ${direccion}`);
+
+        //Obtener los valores basados en la columna
+        let valA = a[ordenarPor];
+        let valB = b[ordenarPor];
+
+        if (valA === null || valA === undefined) return 1;
+        if (valB === null || valB === undefined) return -1;
+        //Si es texto (nombre), lo pasamos a minusculas para comparar bien
+        if(typeof valA === 'string')
+        {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();;
+            if (valA < valB) return direccion === 'asc' ? -1 : 1;
+            if (valA > valB) return direccion === 'asc' ? 1 : -1;
+            return 0;
+        }
+        return direccion === 'asc' ? valA - valB : valB - valA;
+    });
+
+    //Funcion para cambiar el orden
+    const manejarOrden = (columna) => {
+        if(ordenarPor === columna){
+            setDireccion(direccion === 'asc' ? 'desc' : 'asc');
+        } else {
+            setOrdenarPor(columna);
+            setDireccion('asc');
+        }
+    };
 
     return (
         <div className='container mt-4'>
@@ -112,14 +147,20 @@ const ListaProductos = () => {
                 <thead className='table-dark'>
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Stock</th>
+                        <th onClick={() => manejarOrden('nombre')} style={{cursor: 'pointer'}}>
+                            Nombre{ordenarPor === 'nombre' ? (direccion === 'asc' ? ' ↑ ' : ' ↓ ') : ''}
+                        </th>
+                        <th onClick={() => manejarOrden('precio')} style={{cursor: 'pointer'}}>
+                            Precio{ordenarPor === 'precio' ? (direccion === 'asc' ? ' ↑ ' : ' ↓ ') : ''}
+                        </th>
+                        <th onClick={() => manejarOrden('stock')} style={{cursor: 'pointer'}}>
+                            Stock{ordenarPor === 'stock' ? (direccion === 'asc' ? ' ↑ ' : ' ↓ ') : ''}
+                        </th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {productosFiltrados.map((p) =>(
+                    {productosOrdenados.map((p) =>(
                         <tr key={p.id}>
                             <td>{p.id}</td>
                             <td>{p.nombre}</td>
