@@ -1,9 +1,14 @@
 package mx.com.gm.demo.controller;
 
 import jakarta.validation.Valid;
+import mx.com.gm.demo.dto.ResumenInventario;
 import mx.com.gm.demo.model.Producto;
 import mx.com.gm.demo.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,9 +23,23 @@ public class ProductoController {
     private ProductoRepository productoRepository;
 
     //Obtener todos los productos (GET)
-    @GetMapping
+    /*@GetMapping
     public List<Producto> listarTodos(){
         return productoRepository.findAll();
+    }*/
+
+    @GetMapping
+    public Page<Producto> listarProductos(@RequestParam(defaultValue = "") String buscar, @RequestParam(defaultValue = "0") int page,
+                                          @RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "nombre") String sort,
+                                          @RequestParam(defaultValue = "asc") String direction){
+        //Crear objeto oredenamiento
+        Sort orden = direction. equalsIgnoreCase("desc") ? Sort.by(sort).descending() : Sort.by(sort).ascending();
+        Pageable pageable = PageRequest.of(page, size, orden);
+        if (buscar.isEmpty()){
+            return productoRepository.findAll(pageable);
+        }else{
+            return productoRepository.findByNombreContainingIgnoreCase(buscar, pageable);
+        }
     }
 
     //Guardar un nuevo prodocto (POST)
@@ -52,5 +71,17 @@ public class ProductoController {
     public void eliminar (@PathVariable Integer id){
         System.out.println("Llega aquí");
         productoRepository.deleteById(id);
+    }
+
+    /*@GetMapping("/totales")
+    public ResponseEntity<ResumenInventario> obtenerTotales(@RequestParam(defaultValue = "") String buscar){
+        return ResponseEntity.ok(productoRepository.obtenerResumen(buscar));
+    }*/
+
+    @GetMapping("/totales")
+    public ResponseEntity<ResumenInventario> obtenerTotales(
+            @RequestParam(defaultValue = "") String buscar
+    ) {
+        return ResponseEntity.ok(productoRepository.obtenerResumen(buscar));
     }
 }

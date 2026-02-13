@@ -38,3 +38,19 @@ Si tienes Docker instalado, puedes levantar todo el entorno (Base de Datos + API
 1. Clona el repositorio:
    ```bash
    git clone [https://github.com/tu-usuario/tu-repositorio.git](https://github.com/tu-usuario/tu-repositorio.git)
+
+## 🛠️ Funcionalidades Avanzadas
+
+- [x] *Dashboard de Totales*: Cálculo dinámico de valor de inventario y stock total.
+- [x] *Búsqueda Inteligente*: Filtrado en tiempo real sin recargar la página.
+- [x] *Ordenamiento Dinámico*: Clasificación por nombre, precio o stock (Asc/Desc).
+- [x] *Reportes Profesionales: Exportación de datos directamente a **Excel* (.xlsx).
+- [x] *Interfaz Moderna: Uso de **Bootstrap Icons* y tarjetas de resumen para una mejor UX.
+
+---
+
+## 📊 Vista Previa de la Lógica de Negocio
+
+El sistema no solo gestiona datos, sino que procesa información financiera:
+* *Filtros Dinámicos*: La exportación a Excel respeta los filtros aplicados en pantalla.
+* *Cálculos Automáticos*: Uso de métodos reduce para analítica de stock en tiempo real.

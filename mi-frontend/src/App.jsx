@@ -1,5 +1,5 @@
 import ListaProductos from "./components/ListaProductos";
-function App(){
+function App() {
   return (
     <div className="App">
       {/* Barra de navegación simple con Bootstrap */}
@@ -10,7 +10,7 @@ function App(){
       </nav>
       {/* Aquí llamaos al componente que creamos antes */}
       <main>
-        <ListaProductos/>
+        <ListaProductos />
       </main>
     </div>
   );
