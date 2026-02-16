@@ -52,9 +52,6 @@ const ListaProductos = () => {
     // 3.Se ejecuta automaticamente al cargar la página
     useEffect(() => {
         cargarDatosCompletos();
-        //cargarProductos();
-        //cargarResumen();
-        //cargarDatosCompletos();
     }, [cargarDatosCompletos]);
 
     //Funcion para cambiar el orden
@@ -78,8 +75,7 @@ const ListaProductos = () => {
                 await axios.post(URL, nuevoProducto);
             }
             setNuevoProducto({ nombre: '', precio: '', stock: '' }); //Limpiar el formulario
-            //cargarProductos(); //Recargamos la lista
-            //cargarResumen();
+            cargarDatosCompletos(); //Recargamos la lista
         } catch (error) {
             //Si el backend lanza un error de validación, lo atrapamos aqui
             alert("Error: " + error.response.data.message || "Datos invalidado");
@@ -89,7 +85,7 @@ const ListaProductos = () => {
     //Función para ELIMINAR
     const eliminarProducto = async (id) => {
         await axios.delete(`${URL}/${id}`);
-        //cargarProductos(); //Recargamos la lista tras borrar
+        cargarDatosCompletos(); //Recargamos la lista tras borrar
         //cargarResumen();
     };
 

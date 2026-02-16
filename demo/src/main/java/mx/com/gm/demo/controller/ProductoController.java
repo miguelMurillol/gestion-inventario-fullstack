@@ -69,7 +69,6 @@ public class ProductoController {
     //Borrar un producto
     @DeleteMapping("/{id}")
     public void eliminar (@PathVariable Integer id){
-        System.out.println("Llega aquí");
         productoRepository.deleteById(id);
     }
 
